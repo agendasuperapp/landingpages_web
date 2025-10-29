@@ -6,4 +6,4 @@ A new Flutter project.
 
 FlutterFlow projects are built to run on the Flutter _stable_ release.
 
-1.0
+2.0
