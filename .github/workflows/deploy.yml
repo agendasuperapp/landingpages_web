@@ -3,26 +3,38 @@ name: Build & Deploy (3 sites)
 on:
   push:
     branches:
-      - flutterflow   # ajuste para o nome da branch que o FlutterFlow usa
+      - flutterflow   # ✅ ajuste aqui se sua branch for "main" ou outro nome
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # 1️⃣ Baixa o código do FlutterFlow
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Instala o Flutter
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
 
+      # 3️⃣ Corrige automaticamente o conflito da dependência "collection"
+      - name: Corrigir conflito de dependência (collection)
+        run: |
+          echo "🔧 Corrigindo versão do pacote collection para compatibilidade..."
+          sed -i 's/collection: .*/collection: ^1.18.0/' pubspec.yaml || echo "Nada a corrigir"
+
+      # 4️⃣ Instala as dependências
       - name: Flutter pub get
         run: flutter pub get
 
+      # 5️⃣ Compila o build web (CanvasKit = mais performance e compatível com Hostinger)
       - name: Build Web (CanvasKit)
         run: flutter build web --release --web-renderer=canvaskit
 
+      # 6️⃣ Publica o build como artefato para ser usado no job de deploy
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -32,6 +44,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
+    # 7️⃣ Executa o deploy em paralelo para os 3 sites
     strategy:
       matrix:
         target:
@@ -55,6 +69,7 @@ jobs:
             ftp_dir:  FTP_DIR_AFI
 
     steps:
+      # 8️⃣ Baixa o repositório e o build
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -64,11 +79,14 @@ jobs:
           name: web-build
           path: web-build
 
+      # 9️⃣ Aplica os arquivos personalizados (index.html, manifest.json, .htaccess, etc.)
       - name: Apply overlay (inclui dotfiles)
         run: |
           sudo apt-get update && sudo apt-get install -y rsync
+          echo "📦 Aplicando overlay ${{ matrix.target.overlay }}"
           rsync -av --delete --exclude ".git" "${{ matrix.target.overlay }}/" "web-build/"
 
+      # 🔟 Envia via FTP para a hospedagem correspondente
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
