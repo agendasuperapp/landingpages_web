@@ -33,27 +33,28 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        target:
-          - name: agendasuper
-            overlay: overlays/agendasuper
-            ftp_server: FTP_SERVER_ADMIN
-            ftp_user: FTP_USER_ADMIN
-            ftp_pass: FTP_PASS_ADMIN
-            ftp_dir:  FTP_DIR_ADMIN
-          - name: appfinanceiro
-            overlay: overlays/appfinanceiro
-            ftp_server: FTP_SERVER_FIN
-            ftp_user: FTP_USER_FIN
-            ftp_pass: FTP_PASS_FIN
-            ftp_dir:  FTP_DIR_FIN
-          - name: rendarecorrente
-            overlay: overlays/rendarecorrente
-            ftp_server: FTP_SERVER_AFI
-            ftp_user: FTP_USER_AFI
-            ftp_pass: FTP_PASS_AFI
-            ftp_dir:  FTP_DIR_AFI
+strategy:
+  matrix:
+    target:
+      - name: agendasuper
+        overlay: .github/overlays/agendasuper
+        ftp_server: FTP_SERVER_ADMIN
+        ftp_user: FTP_USER_ADMIN
+        ftp_pass: FTP_PASS_ADMIN
+        ftp_dir:  FTP_DIR_ADMIN
+      - name: appfinanceiro
+        overlay: .github/overlays/appfinanceiro
+        ftp_server: FTP_SERVER_FIN
+        ftp_user: FTP_USER_FIN
+        ftp_pass: FTP_PASS_FIN
+        ftp_dir:  FTP_DIR_FIN
+      - name: rendarecorrente
+        overlay: .github/overlays/rendarecorrente
+        ftp_server: FTP_SERVER_AFI
+        ftp_user: FTP_USER_AFI
+        ftp_pass: FTP_PASS_AFI
+        ftp_dir:  FTP_DIR_AFI
+
 
     steps:
       - name: Checkout code
