@@ -3,7 +3,7 @@ name: Build & Deploy (3 sites)
 on:
   push:
     branches:
-      - main   # ou 'production' se for o seu padrão
+      - flutterflow   # ou 'production' se for o seu padrão
 
 jobs:
   build:
