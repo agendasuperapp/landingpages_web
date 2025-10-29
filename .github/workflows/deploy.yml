@@ -20,15 +20,17 @@ jobs:
         with:
           flutter-version: '3.27.0'  # ✅ Atualizado (vem com Dart 3.6)
 
-      # 3️⃣ Corrige automaticamente o conflito da dependência "collection"
-      - name: Corrigir conflito de dependência (collection)
+      # 3️⃣ Corrige automaticamente pacotes incompatíveis antes do pub get
+      - name: Corrigir dependências incompatíveis (collection e intl)
         run: |
-          echo "🔧 Corrigindo versão do pacote collection para compatibilidade..."
-          sed -i 's/collection: .*/collection: ^1.18.0/' pubspec.yaml || echo "Nada a corrigir"
+          echo "🔧 Ajustando dependências para compatibilidade com o SDK do Flutter..."
+          sed -i 's/collection: .*/collection: ^1.18.0/' pubspec.yaml || echo "collection ok"
+          sed -i 's/intl: .*/intl: ^0.19.0/' pubspec.yaml || echo "intl ok"
 
       # 4️⃣ Instala as dependências
       - name: Flutter pub get
         run: flutter pub get
+
 
       # 5️⃣ Compila o build web (CanvasKit = mais performance e compatível com Hostinger)
       - name: Build Web (CanvasKit)
