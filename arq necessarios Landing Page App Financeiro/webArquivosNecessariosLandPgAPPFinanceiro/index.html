@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    Alternatively, build your application passing the --base-href parameter
+    specifying the new root path of your web app.
+
+    Fore more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+  -->
+
+
+  <base href="/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="APP Financeiro">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">  
+
+  <meta name="robots" content="noindex" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.png" sizes="any"/>
+  
+
+  <!-- Open Graph & SEO tags -->
+  <meta property="og:title" content="APP Financeiro" />
+  <meta property="og:description" content="Controle sua vida financeira com esse aplicativo super prático..." />
+  <meta property="og:image" content="SocialShareAppFinanceiro.png" /> 
+  <meta name="twitter:title" content="APP Financeiro" />
+  <meta name="twitter:description" content="Controle sua vida financeira com esse aplicativo super prático..." />
+  <meta name="twitter:image" content="SocialShareAppFinanceiro.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <title> APP Financeiro </title>
+  <meta name="description" content="Controle sua vida financeira com esse aplicativo super prático..." />
+    
+
+  <!-- Status Bar color in Safari browser (iOS) and PWA -->
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#14181b">
+
+
+
+
+<link rel="manifest" href="manifest.json">
+
+
+
+
+  
+</head>
+<body>
+  
+  
+  
+
+
+
+<script>
+//🔷🔷🔷🔷 CONTROLE DE VERSAO DO SISTEMA
+  // ✅ Versão manual do app (altere quando atualizar)
+  const appVersion = "1.0.0";
+
+
+  // ✅ Adiciona parâmetro de versão ao main.dart.js
+  const script = document.createElement('script');
+  script.src = 'main.dart.js?v=' + appVersion;
+  document.body.appendChild(script);
+
+  // ✅ Armazena versão no localStorage para uso no FlutterFlow
+  localStorage.setItem('app_version', appVersion);
+  window.appVersion = appVersion;
+
+</script>
+
+
+</body>
+</html>
+
