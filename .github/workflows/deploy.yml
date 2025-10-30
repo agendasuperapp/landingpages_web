@@ -29,8 +29,9 @@ jobs:
         run: flutter pub get
 
       # Build único do projeto
-      - name: Build Web (CanvasKit)
-        run: flutter build web --release --web-renderer=canvaskit
+- name: Build Web (igual ao script.bat)
+  run: flutter build web
+
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
