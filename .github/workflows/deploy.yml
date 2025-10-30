@@ -1,4 +1,4 @@
-name: Build & Deploy (3 sites)
+name: 🌐 Build & Deploy (3 Sites)
 
 on:
   push:
@@ -11,17 +11,18 @@ jobs:
 
     steps:
       # 1️⃣ Clona o repositório
-      - name: Checkout code
+      - name: 📥 Clonar código do repositório
         uses: actions/checkout@v4
 
       # 2️⃣ Instala o Flutter (versão atual estável compatível com FlutterFlow)
-      - name: Install Flutter
+      - name: 🧰 Instalar Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.35.7'
+          channel: 'stable'
 
       # 3️⃣ Limpa cache e instala dependências
-      - name: Preparar ambiente Flutter limpo
+      - name: 🧹 Preparar ambiente Flutter limpo
         run: |
           flutter clean
           flutter pub get
@@ -29,13 +30,13 @@ jobs:
           dart --version
 
       # 4️⃣ Faz o build web idêntico ao seu script local
-      - name: Build Web (modo release)
+      - name: 🏗️ Build Web (modo release)
         run: |
           echo "🚀 Iniciando build web..."
-          flutter build web --release
+          flutter build web --release --web-renderer canvaskit --base-href=/
 
       # 5️⃣ Exibe informações do build (diagnóstico)
-      - name: Verificar arquivos gerados
+      - name: 🔎 Verificar arquivos gerados
         run: |
           echo "📁 Conteúdo da pasta build/web:"
           ls -lh build/web/ | head -20
@@ -43,7 +44,7 @@ jobs:
           du -h build/web/main.dart.js || true
 
       # 6️⃣ Armazena o build para o job de deploy
-      - name: Upload build artifact
+      - name: 📦 Armazenar build como artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
@@ -52,6 +53,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         target:
@@ -61,12 +63,14 @@ jobs:
             ftp_user: FTP_USER_ADMIN
             ftp_pass: FTP_PASS_ADMIN
             ftp_dir:  FTP_DIR_ADMIN
+
           - name: appfinanceiro
             overlay: .github/overlays/appfinanceiro
             ftp_server: FTP_SERVER_FIN
             ftp_user: FTP_USER_FIN
             ftp_pass: FTP_PASS_FIN
             ftp_dir:  FTP_DIR_FIN
+
           - name: rendarecorrente
             overlay: .github/overlays/rendarecorrente
             ftp_server: FTP_SERVER_AFI
@@ -75,28 +79,73 @@ jobs:
             ftp_dir:  FTP_DIR_AFI
 
     steps:
-      # 7️⃣ Checkout + download do build
-      - name: Checkout code
+      # 7️⃣ Baixa o código e o build gerado
+      - name: 📥 Baixar código e build
         uses: actions/checkout@v4
 
-      - name: Download build artifact
+      - name: 📦 Baixar build artifact
         uses: actions/download-artifact@v4
         with:
           name: web-build
           path: web-build
 
-      # 8️⃣ Cria pasta temporária e aplica overlay
-      - name: Criar pasta temporária e aplicar overlay
+      # 8️⃣ Instala utilitários e prepara pastas
+      - name: ⚙️ Instalar utilitários necessários
         run: |
-          sudo apt-get update && sudo apt-get install -y rsync
+          sudo apt-get update && sudo apt-get install -y jq rsync
           mkdir -p temp/${{ matrix.target.name }}
+
+      # 9️⃣ Copia build base e aplica overlay personalizado
+      - name: 🧩 Aplicar overlay personalizado
+        run: |
           echo "📦 Copiando build web base..."
           rsync -av --delete web-build/ temp/${{ matrix.target.name }}/
           echo "🧩 Aplicando overlay de ${{ matrix.target.name }}..."
           rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
 
-      # 9️⃣ Faz o deploy via FTP (com correção do erro 550)
-      - name: Deploy via FTP
+      # 🔟 Personaliza main.dart.js, index.html e gera log de versão
+      - name: 🧠 Personalizar arquivos e gerar log de versão
+        run: |
+          TEMP_DIR="temp/${{ matrix.target.name }}"
+          VERSION=$(jq -r '.version' "${TEMP_DIR}/version.json")
+          echo "📦 Versão detectada: $VERSION"
+
+          case "${{ matrix.target.name }}" in
+            "agendasuper")
+              APPNAME="Agenda Super"
+              APPID="1"
+              SITE="agendasuper.com.br"
+              ;;
+            "appfinanceiro")
+              APPNAME="APP Financeiro"
+              APPID="2"
+              SITE="appfinanceiro.com"
+              ;;
+            "rendarecorrente")
+              APPNAME="APP Afiliado"
+              APPID="3"
+              SITE="rendarecorrente.app"
+              ;;
+          esac
+
+          echo "🛠️ Aplicando personalizações para $APPNAME"
+
+          sed -i "s/Nome Aplicativo/${APPNAME}/g" "${TEMP_DIR}/main.dart.js"
+          sed -i "s/91234567890/${APPID}/g" "${TEMP_DIR}/main.dart.js"
+          sed -i "s/const appVersion = \".*\";/const appVersion = \"${VERSION}\";/g" "${TEMP_DIR}/index.html"
+
+          BUILD_DATE=$(date '+%Y-%m-%d %H:%M:%S')
+          LOG_FILE="${TEMP_DIR}/${SITE}_${VERSION}.txt"
+          echo "Versão: ${VERSION}" > "${LOG_FILE}"
+          echo "Data: ${BUILD_DATE}" >> "${LOG_FILE}"
+          echo "📄 Criado ${LOG_FILE}"
+
+          echo "🔍 Trecho de verificação no main.dart.js:"
+          grep -m 1 "${APPNAME}" "${TEMP_DIR}/main.dart.js" || true
+          grep -m 1 "${APPID}" "${TEMP_DIR}/main.dart.js" || true
+
+      # 1️⃣1️⃣ Faz o deploy via FTP (Hostinger)
+      - name: 🚀 Publicar via FTP (Hostinger)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets[ matrix.target.ftp_server ] }}
@@ -106,4 +155,9 @@ jobs:
           port: 21
           local-dir: temp/${{ matrix.target.name }}/
           server-dir: ${{ secrets[ matrix.target.ftp_dir ] }}
-          dangerous-clean-slate: true   # ✅ resolve o erro 550 e garante criação recursiva
+          dangerous-clean-slate: true
+          log-level: verbose
+
+      # 1️⃣2️⃣ Finaliza e mostra status
+      - name: ✅ Finalização do deploy
+        run: echo "🎉 Deploy concluído com sucesso para ${{ matrix.target.name }}!"
