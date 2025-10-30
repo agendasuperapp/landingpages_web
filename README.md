@@ -1,4 +1,4 @@
-# APP Afiliado
+# Nome Aplicativo
 
 A new Flutter project.
 

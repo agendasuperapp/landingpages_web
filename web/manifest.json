@@ -1,6 +1,6 @@
 {
-    "name": "APP Afiliado",
-    "short_name": "APP Afiliado",
+    "name": "Nome Aplicativo",
+    "short_name": "Nome Aplicativo",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

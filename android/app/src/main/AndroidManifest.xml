@@ -1,11 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.mycompany.appafiliado"
+    package="com.mycompany.nomeaplicativo"
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.INTERNET"/>
 
 
     <application
-        android:label="APP Afiliado"
+        android:label="Nome Aplicativo"
         tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
@@ -45,7 +45,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="appafiliado" android:host="appafiliado.com" />
+                <data android:scheme="nomeaplicativo" android:host="nomeaplicativo.com" />
             </intent-filter>
 
         </activity>

@@ -1,4 +1,4 @@
-package com.mycompany.appafiliado
+package com.mycompany.nomeaplicativo
 
 import io.flutter.embedding.android.FlutterActivity
 
