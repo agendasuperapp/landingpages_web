@@ -3,40 +3,58 @@ name: Build & Deploy (3 sites)
 on:
   push:
     branches:
-      - flutterflow   # ajuste se for "main" ou outra branch
+      - flutterflow   # ajuste se o FlutterFlow usar outra branch (ex: main)
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Clona o repositório
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Instala o Flutter (versão recomendada do FlutterFlow)
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.0'
+          flutter-version: '3.24.3'  # ajuste se seu FlutterFlow usar versão diferente
 
+      # 3️⃣ Corrige dependências incompatíveis (caso o FlutterFlow altere)
       - name: Corrigir dependências incompatíveis (collection e intl)
         run: |
-          echo "🔧 Ajustando dependências para compatibilidade com o SDK do Flutter..."
+          echo "🔧 Ajustando dependências para compatibilidade..."
           sed -i 's/collection: .*/collection: ^1.18.0/' pubspec.yaml || echo "collection ok"
           sed -i 's/intl: .*/intl: ^0.19.0/' pubspec.yaml || echo "intl ok"
 
-      - name: Flutter pub get
-        run: flutter pub get
+      # 4️⃣ Limpa e reconstrói dependências
+      - name: Preparar ambiente Flutter limpo
+        run: |
+          flutter clean
+          flutter pub get
+          flutter --version
+          dart --version
 
-      # ✅ build corretamente indentado dentro de "steps"
-      - name: Build Web (igual ao script.bat)
-        run: flutter build web
+      # 5️⃣ Build web (igual ao script.bat)
+      - name: Build Web (modo release, igual ao local)
+        run: |
+          echo "🚀 Iniciando build web..."
+          flutter build web --release
 
+      # 6️⃣ Exibe informações do build (para diagnóstico)
+      - name: Verificar arquivos gerados
+        run: |
+          echo "📁 Conteúdo da pasta build/web:"
+          ls -lh build/web/ | head -20
+          echo "📦 Tamanho do main.dart.js:"
+          du -h build/web/main.dart.js || true
+
+      # 7️⃣ Salva o build como artefato para o job de deploy
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: build/web/
-
 
   deploy:
     needs: build
@@ -64,6 +82,7 @@ jobs:
             ftp_dir:  FTP_DIR_AFI
 
     steps:
+      # 8️⃣ Checkout + download do build
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -73,23 +92,24 @@ jobs:
           name: web-build
           path: web-build
 
+      # 9️⃣ Cria pasta temporária e aplica overlay personalizado
       - name: Criar pasta temporária e aplicar overlay
         run: |
           sudo apt-get update && sudo apt-get install -y rsync
           mkdir -p temp/${{ matrix.target.name }}
-          echo "📦 Copiando arquivos do build web para pasta temporária..."
+          echo "📦 Copiando build web base..."
           rsync -av --delete web-build/ temp/${{ matrix.target.name }}/
-
-          echo "🧩 Aplicando overlay para ${{ matrix.target.name }}..."
+          echo "🧩 Aplicando overlay de ${{ matrix.target.name }}..."
           rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
 
+      # 🔟 Faz o deploy via FTP (modo release)
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets[ matrix.target.ftp_server ] }}
           username: ${{ secrets[ matrix.target.ftp_user ] }}
           password: ${{ secrets[ matrix.target.ftp_pass ] }}
+          protocol: ftp
+          port: 21
           local-dir: temp/${{ matrix.target.name }}/
           server-dir: ${{ secrets[ matrix.target.ftp_dir ] }}
-          port: 21
-          protocol: ftp
