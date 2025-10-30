@@ -37,6 +37,21 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await showDialog(
+        context: context,
+        builder: (alertDialogContext) {
+          return AlertDialog(
+            title: Text('teste'),
+            content: Text(FFAppState().varIDAfiliadoAPP.toString()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(alertDialogContext),
+                child: Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
       await action_blocks.acbAtualizarInicializacao(context);
       await action_blocks.actbConsultarPerguntas(context);
       if (widget.cupom != null && widget.cupom != '') {
