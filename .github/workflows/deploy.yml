@@ -3,40 +3,35 @@ name: Build & Deploy (3 sites)
 on:
   push:
     branches:
-      - flutterflow   # ✅ ajuste aqui se sua branch for "main" ou outro nome
+      - flutterflow   # ajuste se for "main" ou outra branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Baixa o código do FlutterFlow
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Instala o Flutter
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.27.0'  # ✅ Atualizado (vem com Dart 3.6)
+          flutter-version: '3.27.0'
 
-      # 3️⃣ Corrige automaticamente pacotes incompatíveis antes do pub get
+      # Corrige pacotes incompatíveis (caso FlutterFlow altere)
       - name: Corrigir dependências incompatíveis (collection e intl)
         run: |
           echo "🔧 Ajustando dependências para compatibilidade com o SDK do Flutter..."
           sed -i 's/collection: .*/collection: ^1.18.0/' pubspec.yaml || echo "collection ok"
           sed -i 's/intl: .*/intl: ^0.19.0/' pubspec.yaml || echo "intl ok"
 
-      # 4️⃣ Instala as dependências
       - name: Flutter pub get
         run: flutter pub get
 
-
-      # 5️⃣ Compila o build web (CanvasKit = mais performance e compatível com Hostinger)
+      # Build único do projeto
       - name: Build Web (CanvasKit)
         run: flutter build web --release --web-renderer=canvaskit
 
-      # 6️⃣ Publica o build como artefato para ser usado no job de deploy
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -46,8 +41,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
-    # 7️⃣ Executa o deploy em paralelo para os 3 sites
     strategy:
       matrix:
         target:
@@ -71,7 +64,6 @@ jobs:
             ftp_dir:  FTP_DIR_AFI
 
     steps:
-      # 8️⃣ Baixa o repositório e o build
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -81,19 +73,23 @@ jobs:
           name: web-build
           path: web-build
 
-      # 9️⃣ Aplica os arquivos personalizados (index.html, manifest.json, .htaccess, etc.)
-      - name: Apply overlay (inclui dotfiles)
+      - name: Criar pasta temporária e aplicar overlay
         run: |
           sudo apt-get update && sudo apt-get install -y rsync
-          echo "📦 Aplicando overlay ${{ matrix.target.overlay }}"
-          rsync -av --delete --exclude ".git" "${{ matrix.target.overlay }}/" "web-build/"
+          mkdir -p temp/${{ matrix.target.name }}
+          echo "📦 Copiando arquivos do build web para pasta temporária..."
+          rsync -av --delete web-build/ temp/${{ matrix.target.name }}/
 
-      # 🔟 Envia via FTP para a hospedagem correspondente
+          echo "🧩 Aplicando overlay para ${{ matrix.target.name }}..."
+          rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets[ matrix.target.ftp_server ] }}
           username: ${{ secrets[ matrix.target.ftp_user ] }}
           password: ${{ secrets[ matrix.target.ftp_pass ] }}
-          local-dir: web-build/
+          local-dir: temp/${{ matrix.target.name }}/
           server-dir: ${{ secrets[ matrix.target.ftp_dir ] }}
+          port: 21
+          protocol: ftp
