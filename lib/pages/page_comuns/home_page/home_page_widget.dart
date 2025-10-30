@@ -4,6 +4,7 @@ import '/pages/app_afiliado/a_f_i_l_cp_scroll/a_f_i_l_cp_scroll_widget.dart';
 import '/pages/app_agendasuper/a_p_p_a_g_cp_scroll/a_p_p_a_g_cp_scroll_widget.dart';
 import '/pages/app_financeiro/a_p_p_f_i_n_cp_scroll/a_p_p_f_i_n_cp_scroll_widget.dart';
 import '/actions/actions.dart' as action_blocks;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
@@ -37,6 +38,10 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
+      if (kDebugMode) {
+        FFAppState().varIDAfiliadoAPP = 1;
+        safeSetState(() {});
+      }
       await action_blocks.acbAtualizarInicializacao(context);
       await action_blocks.actbConsultarPerguntas(context);
       if (widget.cupom != null && widget.cupom != '') {
