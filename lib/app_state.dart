@@ -74,7 +74,7 @@ class FFAppState extends ChangeNotifier {
 
   late SharedPreferences prefs;
 
-  String _varVersao = '1.0.13';
+  String _varVersao = '1.0.14';
   String get varVersao => _varVersao;
   set varVersao(String value) {
     _varVersao = value;
@@ -87,7 +87,7 @@ class FFAppState extends ChangeNotifier {
     prefs.setInt('ff_varcontadorteste', value);
   }
 
-  int _varIDAfiliadoAPP = 3;
+  int _varIDAfiliadoAPP = 999999;
   int get varIDAfiliadoAPP => _varIDAfiliadoAPP;
   set varIDAfiliadoAPP(int value) {
     _varIDAfiliadoAPP = value;
