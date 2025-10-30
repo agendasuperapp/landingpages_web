@@ -18,7 +18,7 @@ jobs:
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'  # ajuste se seu FlutterFlow usar versão diferente
+          flutter-version: '3.35.7'  # ajuste se seu FlutterFlow usar versão diferente
 
       # 3️⃣ Corrige dependências incompatíveis (caso o FlutterFlow altere)
       - name: Corrigir dependências incompatíveis (collection e intl)
