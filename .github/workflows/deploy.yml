@@ -14,7 +14,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Instala o Flutter (versão recomendada do FlutterFlow)
+      # 2️⃣ Instala o Flutter (versão recomendada)
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -22,10 +22,10 @@ jobs:
 
       # 3️⃣ Corrige dependências incompatíveis (caso o FlutterFlow altere)
       - name: Corrigir dependências incompatíveis (collection e intl)
-      run: |
-        echo "🔧 Ajustando dependências..."
-        sed -i 's/collection: .*/collection: ^1.19.0/' pubspec.yaml || echo "collection ok"
-        sed -i 's/intl: .*/intl: ^0.20.2/' pubspec.yaml || echo "intl ok"
+        run: |
+          echo "🔧 Ajustando dependências..."
+          sed -i 's/collection: .*/collection: ^1.19.0/' pubspec.yaml || echo "collection ok"
+          sed -i 's/intl: .*/intl: ^0.20.2/' pubspec.yaml || echo "intl ok"
 
       # 4️⃣ Limpa e reconstrói dependências
       - name: Preparar ambiente Flutter limpo
@@ -34,6 +34,7 @@ jobs:
           flutter pub get
           flutter --version
           dart --version
+
 
       # 5️⃣ Build web (igual ao script.bat)
       - name: Build Web (modo release, igual ao local)
