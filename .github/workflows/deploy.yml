@@ -18,7 +18,6 @@ jobs:
         with:
           flutter-version: '3.27.0'
 
-      # Corrige pacotes incompatíveis (caso FlutterFlow altere)
       - name: Corrigir dependências incompatíveis (collection e intl)
         run: |
           echo "🔧 Ajustando dependências para compatibilidade com o SDK do Flutter..."
@@ -28,16 +27,16 @@ jobs:
       - name: Flutter pub get
         run: flutter pub get
 
-      # Build único do projeto
-- name: Build Web (igual ao script.bat)
-  run: flutter build web
-
+      # ✅ build corretamente indentado dentro de "steps"
+      - name: Build Web (igual ao script.bat)
+        run: flutter build web
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: web-build
           path: build/web/
+
 
   deploy:
     needs: build
