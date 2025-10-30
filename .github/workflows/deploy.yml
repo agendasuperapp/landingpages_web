@@ -207,7 +207,7 @@ jobs:
           password: ${{ secrets.MAIL_PASS }}
           subject: "🚀 Deploy concluído para ${{ matrix.target.name }}"
           to: "hersoares12@gmail.com, contatoagendasuper@gmail.com, gerenciavendasdigitais2@gmail.com"
-          from: "Deploy ${{ matrix.target.name }} ${{ env.VERSION }} <${{ secrets.MAIL_USER }}>"
+          from: "Nova versão ${{ matrix.target.name }} ${{ env.VERSION }} <${{ secrets.MAIL_USER }}>"
           body: |
             ✅ Deploy finalizado para **${{ matrix.target.name }}**
             🌐 Versão: ${{ env.VERSION }}
