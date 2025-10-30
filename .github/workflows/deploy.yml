@@ -184,7 +184,7 @@ jobs:
           username: ${{ secrets.MAIL_USER }}
           password: ${{ secrets.MAIL_PASS }}
           subject: "🚀 Deploy concluído para ${{ matrix.target.name }}"
-          to: seuemail@gmail.com
+          to: "hersoares12@gmail.com, contatoagendasuper@gmail.com, gerenciavendasdigitais2@gmail.com"
           from: "Deploy GitHub <${{ secrets.MAIL_USER }}>"
           body: |
             ✅ Deploy finalizado para **${{ matrix.target.name }}**
