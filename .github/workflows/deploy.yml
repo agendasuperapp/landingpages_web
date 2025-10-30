@@ -33,7 +33,7 @@ jobs:
       - name: 🏗️ Build Web (modo release)
         run: |
           echo "🚀 Iniciando build web..."
-          flutter build web --release --web-renderer canvaskit --base-href=/
+          flutter build web --release 
 
       # 5️⃣ Exibe informações do build (diagnóstico)
       - name: 🔎 Verificar arquivos gerados
