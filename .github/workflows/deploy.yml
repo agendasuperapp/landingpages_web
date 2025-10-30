@@ -14,20 +14,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Instala o Flutter (versão recomendada)
+      # 2️⃣ Instala o Flutter (versão atual estável compatível com FlutterFlow)
       - name: Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.35.7'  # ajuste se seu FlutterFlow usar versão diferente
+          flutter-version: '3.35.7'
 
-      # 3️⃣ Corrige dependências incompatíveis (caso o FlutterFlow altere)
-      - name: Corrigir dependências incompatíveis (collection e intl)
-        run: |
-          echo "🔧 Ajustando dependências..."
-          sed -i 's/collection: .*/collection: ^1.19.0/' pubspec.yaml || echo "collection ok"
-          sed -i 's/intl: .*/intl: ^0.20.2/' pubspec.yaml || echo "intl ok"
-
-      # 4️⃣ Limpa e reconstrói dependências
+      # 3️⃣ Limpa cache e instala dependências
       - name: Preparar ambiente Flutter limpo
         run: |
           flutter clean
@@ -35,14 +28,13 @@ jobs:
           flutter --version
           dart --version
 
-
-      # 5️⃣ Build web (igual ao script.bat)
-      - name: Build Web (modo release, igual ao local)
+      # 4️⃣ Faz o build web idêntico ao seu script local
+      - name: Build Web (modo release)
         run: |
           echo "🚀 Iniciando build web..."
           flutter build web --release
 
-      # 6️⃣ Exibe informações do build (para diagnóstico)
+      # 5️⃣ Exibe informações do build (diagnóstico)
       - name: Verificar arquivos gerados
         run: |
           echo "📁 Conteúdo da pasta build/web:"
@@ -50,7 +42,7 @@ jobs:
           echo "📦 Tamanho do main.dart.js:"
           du -h build/web/main.dart.js || true
 
-      # 7️⃣ Salva o build como artefato para o job de deploy
+      # 6️⃣ Armazena o build para o job de deploy
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -83,7 +75,7 @@ jobs:
             ftp_dir:  FTP_DIR_AFI
 
     steps:
-      # 8️⃣ Checkout + download do build
+      # 7️⃣ Checkout + download do build
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -93,7 +85,7 @@ jobs:
           name: web-build
           path: web-build
 
-      # 9️⃣ Cria pasta temporária e aplica overlay personalizado
+      # 8️⃣ Cria pasta temporária e aplica overlay
       - name: Criar pasta temporária e aplicar overlay
         run: |
           sudo apt-get update && sudo apt-get install -y rsync
@@ -103,7 +95,7 @@ jobs:
           echo "🧩 Aplicando overlay de ${{ matrix.target.name }}..."
           rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
 
-      # 🔟 Faz o deploy via FTP (modo release)
+      # 9️⃣ Faz o deploy via FTP (com correção do erro 550)
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -114,3 +106,4 @@ jobs:
           port: 21
           local-dir: temp/${{ matrix.target.name }}/
           server-dir: ${{ secrets[ matrix.target.ftp_dir ] }}
+          dangerous-clean-slate: true   # ✅ resolve o erro 550 e garante criação recursiva
