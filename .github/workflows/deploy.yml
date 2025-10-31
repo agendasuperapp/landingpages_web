@@ -114,17 +114,17 @@ jobs:
           case "${{ matrix.target.name }}" in
             "agendasuper")
               APPNAME="Agenda Super"
-              APPID="5"
+              APPID="1"
               SITE="agendasuper.com.br"
               ;;
             "appfinanceiro")
               APPNAME="APP Financeiro"
-              APPID="7"
+              APPID="2"
               SITE="appfinanceiro.com"
               ;;
             "rendarecorrente")
               APPNAME="APP Afiliado"
-              APPID="6"
+              APPID="3"
               SITE="rendarecorrente.app"
               ;;
           esac
@@ -168,9 +168,9 @@ jobs:
           DESC="${{ github.event.head_commit.message }}"
           STATUS="${{ job.status }}"
           APP_ID=0
-          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=1; fi
-          if [[ "${{ matrix.target.name }}" == "appfinanceiro" ]]; then APP_ID=2; fi
-          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=3; fi
+          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=5; fi
+          if [[ "${{ matrix.target.name }}" == "appfinanceiro" ]]; then APP_ID=7; fi
+          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=6; fi
 
           echo "📦 Enviando versão ${VERSION} para Supabase (App ID: ${APP_ID}, Status: ${STATUS})..."
 
