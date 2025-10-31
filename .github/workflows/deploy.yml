@@ -208,13 +208,13 @@ jobs:
           secure: true
           username: ${{ secrets.MAIL_USER }}
           password: ${{ secrets.MAIL_PASS }}
-          subject: "🚀 Atualização ${{ matrix.target.name }} ${{ env.STATUS }}"
+          subject: "🚀 Atualização LandPage ${{ matrix.target.name }} ${{ env.STATUS }}"
           to: "hersoares12@gmail.com, contatoagendasuper@gmail.com, gerenciavendasdigitais2@gmail.com"
-          from: "Landing Page ${{ matrix.target.name }} ${{ env.VERSION }} ${{ env.STATUS }} nova versão disponível <${{ secrets.MAIL_USER }}>"
+          from: "LandPage ${{ matrix.target.name }} ${{ env.VERSION }} ${{ env.STATUS }} nova versão disponível <${{ secrets.MAIL_USER }}>"
           body: |
-            ✅ Deploy finalizado para **${{ matrix.target.name }}**
+            ✅ Deploy finalizado para Landing Page ${{ matrix.target.name }}
             🌐 Versão: ${{ env.VERSION }}
             📝 Descrição: ${{ env.DESC }}
             📅 Data: ${{ env.DATA }}
-            📁 Pasta: ${{ matrix.target.name }}
+            🌐 Aplicativo: Landing Page ${{ matrix.target.name }}
             ⚙️ Status: ${{ env.STATUS }}
