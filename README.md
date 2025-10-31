@@ -1,4 +1,4 @@
-# Nome Aplicativo
+# Landing Pages Apps
 
 A new Flutter project.
 
