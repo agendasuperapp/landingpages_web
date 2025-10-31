@@ -130,7 +130,7 @@ jobs:
 
           echo "🛠️ Aplicando personalizações para $APPNAME"
 
-          sed -i "s/Landing Page/${APPNAME}/g" "${TEMP_DIR}/main.dart.js"
+          sed -i "s/Landing Pages Apps/${APPNAME}/g" "${TEMP_DIR}/main.dart.js"
           sed -i "s/91234567890/${APPID}/g" "${TEMP_DIR}/main.dart.js"
           sed -i "s/const appVersion = \".*\";/const appVersion = \"${VERSION}\";/g" "${TEMP_DIR}/index.html"
 
