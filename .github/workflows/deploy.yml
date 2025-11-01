@@ -215,8 +215,9 @@ jobs:
           DESC="${{ github.event.head_commit.message }}"
           STATUS="${{ job.status }}"
           APP_ID=0
-          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=2; fi
-          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=3; fi
+          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=5; fi
+          if [[ "${{ matrix.target.name }}" == "appfinanceiro" ]]; then APP_ID=7; fi
+          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=6; fi
 
           echo "📦 Enviando versão ${VERSION} para Supabase..."
           curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/tbl_versoes_sistema" \
@@ -260,6 +261,7 @@ jobs:
             📝 Descrição: ${{ env.DESC }}
             📅 Data: ${{ env.DATA }}
             🌐 Aplicativo: Landing Page ${{ matrix.target.name }}
+            🌐 Site: ${SITE}
             ⚙️ Status: ${{ env.STATUS }}
 
       # 1️⃣7️⃣ Finaliza e mostra status
