@@ -261,7 +261,7 @@ jobs:
             📝 Descrição: ${{ env.DESC }}
             📅 Data: ${{ env.DATA }}
             🌐 Aplicativo: Landing Page ${{ matrix.target.name }}
-            🌐 Site: ${SITE}
+            🌐 Site:${{ SITE }}
             ⚙️ Status: ${{ env.STATUS }}
 
       # 1️⃣7️⃣ Finaliza e mostra status
