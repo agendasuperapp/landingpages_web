@@ -147,6 +147,9 @@ jobs:
           grep -m 1 "${APPNAME}" "${TEMP_DIR}/main.dart.js" || true
           grep -m 1 "${APPID}" "${TEMP_DIR}/main.dart.js" || true
 
+          # ✅ Exporta SITE para ser usado nos próximos passos
+          echo "SITE=${SITE}" >> $GITHUB_ENV
+
     # 1️⃣2️⃣ Cria backup remoto dentro da hospedagem com número da versão
       - name: 💾 Criar backup remoto com versão atual
         run: |
@@ -261,7 +264,7 @@ jobs:
             📝 Descrição: ${{ env.DESC }}
             📅 Data: ${{ env.DATA }}
             🌐 Aplicativo: Landing Page ${{ matrix.target.name }}
-            🌐 Site:${{ SITE }}
+            🌎 Site: ${{ env.SITE }}
             ⚙️ Status: ${{ env.STATUS }}
 
       # 1️⃣7️⃣ Finaliza e mostra status
