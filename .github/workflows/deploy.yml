@@ -91,10 +91,11 @@ jobs:
           name: web-build
           path: web-build
 
-      # 9️⃣ Instala utilitários e prepara pastas
+      # 9️⃣ Instala utilitários necessários (jq, rsync, curl, lftp)
       - name: ⚙️ Instalar utilitários necessários
         run: |
-          sudo apt-get update && sudo apt-get install -y jq rsync curl
+          sudo apt-get update
+          sudo apt-get install -y jq rsync curl lftp
           mkdir -p temp/${{ matrix.target.name }}
 
       # 🔟 Copia build base e aplica overlay personalizado
