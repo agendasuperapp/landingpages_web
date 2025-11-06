@@ -1,12 +1,55 @@
-name: 🌐 Build & Deploy (Web + APK Otimizado e Compatível)
+# 🌐 Build & Deploy (3 Sites)
+name: 🌐 Build & Deploy (3 Sites)
 
 on:
   push:
     branches:
-      - flutterflow
+      - flutterflow   # ajuste se o FlutterFlow usar outra branch (ex: main)
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Clona o repositório
+      - name: 📥 Clonar código do repositório
+        uses: actions/checkout@v4
+
+      # 2️⃣ Instala o Flutter (versão atual estável compatível com FlutterFlow)
+      - name: 🧰 Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.7'
+          channel: 'stable'
+
+      # 3️⃣ Limpa cache e instala dependências
+      - name: 🧹 Preparar ambiente Flutter limpo
+        run: |
+          flutter clean
+          flutter pub get
+          flutter --version
+          dart --version
+      # 4️⃣ Faz o build web idêntico ao seu script local
+      - name: 🏗️ Build Web (modo release)
+        run: |
+          echo "🚀 Iniciando build web..."
+          flutter build web --release 
+      # 5️⃣ Exibe informações do build (diagnóstico)
+      - name: 🔎 Verificar arquivos gerados
+        run: |
+          echo "📁 Conteúdo da pasta build/web:"
+          ls -lh build/web/ | head -20
+          echo "📦 Tamanho do main.dart.js:"
+          du -h build/web/main.dart.js || true
+      # 6️⃣ Armazena o build para o job de deploy
+      - name: 📦 Armazenar build como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web/
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,107 +60,121 @@ jobs:
             ftp_server: FTP_SERVER_ADMIN
             ftp_user: FTP_USER_ADMIN
             ftp_pass: FTP_PASS_ADMIN
-            ftp_dir: FTP_DIR_ADMIN
+            ftp_dir:  FTP_DIR_ADMIN
+
+          - name: appfinanceiro
+            overlay: .github/overlays/appfinanceiro
+            ftp_server: FTP_SERVER_FIN
+            ftp_user: FTP_USER_FIN
+            ftp_pass: FTP_PASS_FIN
+            ftp_dir:  FTP_DIR_FIN
 
           - name: rendarecorrente
             overlay: .github/overlays/rendarecorrente
             ftp_server: FTP_SERVER_AFI
             ftp_user: FTP_USER_AFI
             ftp_pass: FTP_PASS_AFI
-            ftp_dir: FTP_DIR_AFI
+            ftp_dir:  FTP_DIR_AFI
 
     steps:
-      # 1️⃣ Clonar repositório
-      - name: 1️⃣ 📥 Clonar repositório
+      # 7️⃣ Baixa o código e o build gerado
+      - name: 📥 Baixar código e build
         uses: actions/checkout@v4
 
-      # 2️⃣ Restaurar cache Flutter e Gradle
-      - name: 2️⃣ ⚡ Restaurar cache Flutter e Gradle
-        uses: actions/cache@v4
+      # 8️⃣ Baixa o artifact do build web
+      - name: 📦 Baixar build artifact
+        uses: actions/download-artifact@v4
         with:
-          path: |
-            ~/.pub-cache
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-            build
-          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-
+          name: web-build
+          path: web-build
 
-      # 3️⃣ Instalar Flutter
-      - name: 3️⃣ 🧰 Instalar Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.35.7'
-          channel: 'stable'
-
-      # 4️⃣ Instalar utilitários necessários
-      - name: 4️⃣ ⚙️ Instalar utilitários necessários
+      # 9️⃣ Instala utilitários necessários (jq, rsync, curl, lftp)
+      - name: ⚙️ Instalar utilitários necessários
         run: |
           sudo apt-get update
-          sudo apt-get install -y jq rsync curl lftp zipalign apksigner
-
-      # 5️⃣ Preparar ambiente
-      - name: 5️⃣ 🧹 Preparar ambiente
-        run: |
-          flutter pub get
+          sudo apt-get install -y jq rsync curl lftp
           mkdir -p temp/${{ matrix.target.name }}
-
-      # 6️⃣ Definir variáveis globais
-      - name: 6️⃣ 🧠 Definir variáveis globais
+      # 🔟 Copia build base e aplica overlay personalizado
+      - name: 🧩 Aplicar overlay personalizado
         run: |
+          echo "📦 Copiando build web base..."
+          rsync -av --delete web-build/ temp/${{ matrix.target.name }}/
+          echo "🧩 Aplicando overlay de ${{ matrix.target.name }}..."
+          rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
+      # 1️⃣1️⃣ Personaliza main.dart.js, index.html e gera log de versão
+      - name: 🧠 Personalizar arquivos e gerar log de versão
+        run: |
+          TEMP_DIR="temp/${{ matrix.target.name }}"
+          VERSION=$(jq -r '.version' "${TEMP_DIR}/version.json")
+          echo "📦 Versão detectada: $VERSION"
           case "${{ matrix.target.name }}" in
             "agendasuper")
               APPNAME="Agenda Super"
-              IDAFILIADOAPP="1"
-              SITE="app.agendasuper.com.br"
-              APP_ID_ANDROID="com.adminagendasupertwo.app"
+              APPID="1"
+              SITE="agendasuper.com.br"
+              ;;
+            "appfinanceiro")
+              APPNAME="APP Financeiro"
+              APPID="2"
+              SITE="appfinanceiro.com"
               ;;
             "rendarecorrente")
               APPNAME="APP Afiliado"
-              IDAFILIADOAPP="3"
-              SITE="painel.rendarecorrente.app"
-              APP_ID_ANDROID="com.adminrendarecorrentetwo.app"
+              APPID="3"
+              SITE="rendarecorrente.app"
               ;;
           esac
-          echo "APPNAME=$APPNAME" >> $GITHUB_ENV
-          echo "IDAFILIADOAPP=$IDAFILIADOAPP" >> $GITHUB_ENV
-          echo "SITE=$SITE" >> $GITHUB_ENV
-          echo "APP_ID_ANDROID=$APP_ID_ANDROID" >> $GITHUB_ENV
-
-      # 7️⃣ Personalizar app_state.dart
-      - name: 7️⃣ ✏️ Personalizar lib/app_state.dart
-        run: |
-          cp lib/app_state.dart lib/app_state_backup.dart || true
-          perl -pi -e "s/91234567890/${{ env.IDAFILIADOAPP }}/g" lib/app_state.dart
-
-      # 8️⃣ Personalizar main.dart
-      - name: 8️⃣ ✏️ Personalizar lib/main.dart
-        run: |
-          perl -pi -e "s/NomePageTitle/${{ env.APPNAME }}/g" lib/main.dart
-
-      # 9️⃣ Build Web (release)
-      - name: 9️⃣ 🏗️ Build Web (release)
-        run: flutter build web --release
-
-      # 🔟 Aplicar overlay (web)
-      - name: 🔟 🧩 Aplicar overlay personalizado (web)
-        run: |
-          rsync -av --delete build/web/ temp/${{ matrix.target.name }}/
-          rsync -av --exclude ".git" "${{ matrix.target.overlay }}/" "temp/${{ matrix.target.name }}/"
-
-      # 11️⃣ Personalizar main.dart.js e index.html
-      - name: 11️⃣ 🧠 Personalizar main.dart.js e index.html
-        run: |
-          TEMP_DIR="temp/${{ matrix.target.name }}"
-          VERSION=$(jq -r '.version' "${TEMP_DIR}/version.json" || echo "4.1.0")
-          sed -i "s/NomePageTitle/${{ env.APPNAME }}/g" "${TEMP_DIR}/main.dart.js"
-          sed -i "s/91234567890/${{ env.IDAFILIADOAPP }}/g" "${TEMP_DIR}/main.dart.js"
+          echo "🛠️ Aplicando personalizações para $APPNAME"
+          sed -i "s/Landing Pages Apps/${APPNAME}/g" "${TEMP_DIR}/main.dart.js"
+          sed -i "s/91234567890/${APPID}/g" "${TEMP_DIR}/main.dart.js"
           sed -i "s/const appVersion = \".*\";/const appVersion = \"${VERSION}\";/g" "${TEMP_DIR}/index.html"
-          echo "VERSION=${VERSION}" >> $GITHUB_ENV
-
-      # 12️⃣ Publicar site via FTP
-      - name: 12️⃣ 🚀 Publicar site via FTP
+          BUILD_DATE=$(date '+%Y-%m-%d %H:%M:%S')
+          LOG_FILE="${TEMP_DIR}/${SITE}_${VERSION}.txt"
+          echo "Versão: ${VERSION}" > "${LOG_FILE}"
+          echo "Data: ${BUILD_DATE}" >> "${LOG_FILE}"
+          echo "📄 Criado ${LOG_FILE}"
+          echo "🔍 Trecho de verificação no main.dart.js:"
+          grep -m 1 "${APPNAME}" "${TEMP_DIR}/main.dart.js" || true
+          grep -m 1 "${APPID}" "${TEMP_DIR}/main.dart.js" || true
+          # ✅ Exporta SITE para ser usado nos próximos passos
+          echo "SITE=${SITE}" >> $GITHUB_ENV
+    # 1️⃣2️⃣ Cria backup remoto dentro da hospedagem com número da versão
+      - name: 💾 Criar backup remoto com versão atual
+        run: |
+          set -e
+          echo "🧩 Lendo versão atual do version.json na hospedagem..."
+          FTP_HOST="${{ secrets[ matrix.target.ftp_server ] }}"
+          FTP_USER="${{ secrets[ matrix.target.ftp_user ] }}"
+          FTP_PASS="${{ secrets[ matrix.target.ftp_pass ] }}"
+          REMOTE_DIR="${{ secrets[ matrix.target.ftp_dir ] }}"
+          # 1️⃣2️⃣.1 Baixa o version.json remoto
+          curl -s -u "$FTP_USER:$FTP_PASS" "ftp://$FTP_HOST/$REMOTE_DIR/version.json" -o version_remote.json || echo "{}" > version_remote.json
+          VERSION_REMOTE=$(jq -r '.version // "desconhecida"' version_remote.json)
+          echo "📦 Versão detectada no servidor: ${VERSION_REMOTE}"
+          # 1️⃣2️⃣.2 Gera nome da pasta de backup
+          TIMESTAMP=$(date '+%Y_%m_%d_%H%M%S')
+          BACKUP_DIR="backup_versao_${VERSION_REMOTE}_${TIMESTAMP}"
+          echo "📁 Pasta de backup será: ${BACKUP_DIR}"
+          # 1️⃣2️⃣.3 Baixa public_html (sem backup)
+          echo "⬇️ Baixando public_html (sem /backup)..."
+          rm -rf local_backup && mkdir -p local_backup
+          lftp -u "$FTP_USER","$FTP_PASS" "ftp://$FTP_HOST" -e "
+            set ftp:ssl-allow no;
+            mirror --verbose --exclude-glob backup/ ${REMOTE_DIR}/ ./local_backup/;
+            bye
+          "
+          # 1️⃣2️⃣.4 Envia cópia para /backup/
+          echo "⬆️ Enviando cópia para a pasta de backup..."
+          lftp -u "$FTP_USER","$FTP_PASS" "ftp://$FTP_HOST" -e "
+            set ftp:ssl-allow no;
+            mkdir -p ${REMOTE_DIR}/backup/${BACKUP_DIR};
+            mirror --reverse --verbose ./local_backup/ ${REMOTE_DIR}/backup/${BACKUP_DIR}/;
+            bye
+          "
+          echo "✅ Backup completo criado em ${REMOTE_DIR}/backup/${BACKUP_DIR}"
+          
+       # 1️⃣3️⃣ Faz o deploy via FTP (sem apagar tudo)
+      - name: 🚀 Publicar via FTP (Hostinger)
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets[ matrix.target.ftp_server ] }}
@@ -129,104 +186,47 @@ jobs:
           retries: 5
           local-dir: temp/${{ matrix.target.name }}/
           server-dir: ${{ secrets[ matrix.target.ftp_dir ] }}
-          dangerous-clean-slate: false
-          sync-mode: update
+          dangerous-clean-slate: false       # mantém arquivos antigos
+          sync-mode: update                  # substitui apenas os modificados
+          log-level: verbose
 
-      # 13️⃣ Registrar versão WEB no Supabase
-      - name: 13️⃣ 💾 Registrar versão WEB no Supabase
+          
+      # 1️⃣4️⃣ Registra versão no Supabase
+      - name: 💾 Registrar versão no Supabase
+        if: success() || failure()
         run: |
+          TEMP_DIR="temp/${{ matrix.target.name }}"
+          VERSION=$(jq -r '.version' "${TEMP_DIR}/version.json")
           DESC="${{ github.event.head_commit.message }}"
+          STATUS="${{ job.status }}"
           APP_ID=0
-          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=2; fi
-          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=3; fi
+          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=5; fi
+          if [[ "${{ matrix.target.name }}" == "appfinanceiro" ]]; then APP_ID=7; fi
+          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=6; fi
+          echo "📦 Enviando versão ${VERSION} para Supabase..."
           curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/tbl_versoes_sistema" \
             -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             -H "Content-Type: application/json" \
-            -d "{\"versao\": \"${{ env.VERSION }}\", \"descricao\": \"${DESC}\", \"id_app\": ${APP_ID}, \"status\": \"OK\", \"sistema_op\": \"WEB\"}"
+            -d "{\"versao\": \"${VERSION}\", \"descricao\": \"${DESC}\", \"id_app\": ${APP_ID}, \"status\": \"${STATUS}\"}"
+    
 
-      # 14️⃣ Configurar assinatura Android
-      - name: 14️⃣ 🔐 Configurar assinatura Android
+      # 1️⃣5️⃣ Captura informações para o e-mail
+      - name: 📨 Preparar informações para e-mail
+        if: success() || failure()
         run: |
-          mkdir -p android/app
-          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > android/app/upload-keystore.jks
-          {
-            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}"
-            echo "keyPassword=${{ secrets.KEY_PASSWORD }}"
-            echo "keyAlias=${{ secrets.KEY_ALIAS }}"
-            echo "storeFile=${{ github.workspace }}/android/app/upload-keystore.jks"
-          } > android/key.properties
-
-      # 15️⃣ Aplicar custom codes overlay
-      - name: 15️⃣ 🔄 Aplicar custom codes overlay
-        run: |
-          mkdir -p lib/custom_code/actions
-          cp -r .github/overlays/custom_codes/* lib/custom_code/actions/
-
-      # 16️⃣ Personalizar ícones e IDs
-      - name: 16️⃣ 🎨 Aplicar ícones e IDs corretos
-        run: |
-          sed -i "s/^namespace .*/namespace \"${{ env.APP_ID_ANDROID }}\"/" android/app/build.gradle
-          sed -i "s/applicationId \".*\"/applicationId \"${{ env.APP_ID_ANDROID }}\"/" android/app/build.gradle
-          ICON_PATH=".github/overlays/icons/${{ matrix.target.name }}/ic_launcher.png"
-          for dir in android/app/src/main/res/mipmap-*; do
-            cp "$ICON_PATH" "$dir/ic_launcher.png" || true
-          done
-
-      # 17️⃣ Corrigir nome no Manifest
-      - name: 17️⃣ 📝 Corrigir nome no AndroidManifest.xml
-        run: |
-          MANIFEST_PATH="android/app/src/main/AndroidManifest.xml"
-          sed -i "s/android:label=\"[^\"]*\"/android:label=\"${{ env.APPNAME }}\"/" "$MANIFEST_PATH"
-
-      # 18️⃣ Substituir build.gradle customizado
-      - name: 18️⃣ 🧱 Substituir build.gradle customizado
-        run: |
-          cp -f .github/overlays/build/build.gradle android/app/build.gradle
-          grep "applicationId" android/app/build.gradle
-
-      # 19️⃣ Gerar APK Release
-      - name: 19️⃣ 🤖 Gerar APK Release Assinado
-        run: |
-          flutter build apk --release --target-platform android-arm64
-          VERSION=${{ env.VERSION }}
-          SAFE_APPNAME=$(echo "${{ env.APPNAME }}" | tr ' ' '_' )
-          APK_PATH="build/app/outputs/flutter-apk/${SAFE_APPNAME}_${VERSION}_arm64.apk"
-          mv build/app/outputs/flutter-apk/app-release.apk "$APK_PATH"
-          echo "APK_PATH=$APK_PATH" >> $GITHUB_ENV
-
-      # 20️⃣ Upload do APK via FTP
-      - name: 20️⃣ ☁️ Enviar APK para Hostinger
-        run: |
-          VERSION=${{ env.VERSION }}
-          SAFE_APPNAME=$(echo "${{ env.APPNAME }}" | tr ' ' '_' )
-          lftp -u "${{ secrets[ matrix.target.ftp_user ] }}","${{ secrets[ matrix.target.ftp_pass ] }}" "ftp://${{ secrets[ matrix.target.ftp_server ] }}" -e "
-            set ftp:ssl-allow no;
-            cd ${{ secrets[ matrix.target.ftp_dir ] }};
-            mkdir -f apk || true;
-            cd apk;
-            lcd build/app/outputs/flutter-apk;
-            put ${SAFE_APPNAME}_${VERSION}_arm64.apk;
-            bye
-          "
-
-      # 21️⃣ Registrar versão APK no Supabase
-      - name: 21️⃣ 💾 Registrar versão APK no Supabase
-        run: |
+          TEMP_DIR="temp/${{ matrix.target.name }}"
+          VERSION=$(jq -r '.version' "${TEMP_DIR}/version.json")
+          DATA=$(date '+%d/%m/%Y %H:%M:%S')
+          STATUS="${{ job.status }}"
           DESC="${{ github.event.head_commit.message }}"
-          APP_ID=0
-          if [[ "${{ matrix.target.name }}" == "agendasuper" ]]; then APP_ID=2; fi
-          if [[ "${{ matrix.target.name }}" == "rendarecorrente" ]]; then APP_ID=3; fi
-          SAFE_APPNAME=$(echo "${{ env.APPNAME }}" | tr ' ' '_' )
-          VERSION=${{ env.VERSION }}
-          curl -X POST "${{ secrets.SUPABASE_URL }}/rest/v1/tbl_versoes_sistema" \
-            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
-            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"versao\": \"${VERSION}\", \"descricao\": \"${DESC}\", \"id_app\": ${APP_ID}, \"status\": \"OK\", \"sistema_op\": \"APK\", \"nome_apk\": \"${SAFE_APPNAME}_${VERSION}_arm64.apk\"}"
-
-      # 22️⃣ Enviar e-mail de conclusão
-      - name: 22️⃣ ✉️ Enviar e-mail de conclusão
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "DATA=${DATA}" >> $GITHUB_ENV
+          echo "STATUS=${STATUS}" >> $GITHUB_ENV
+          echo "DESC=${DESC}" >> $GITHUB_ENV
+      # 1️⃣6️⃣ Enviar e-mail de notificação
+      - name: ✉️ Disparar e-mail de status do deploy
+        if: success() || failure()
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
@@ -234,12 +234,17 @@ jobs:
           secure: true
           username: ${{ secrets.MAIL_USER }}
           password: ${{ secrets.MAIL_PASS }}
-          subject: "🚀 Deploy concluído ${{ matrix.target.name }} v${{ env.VERSION }}"
+          subject: "🚀 Atualização ${{ matrix.target.name }} ${{ env.STATUS }}"
           to: "hersoares12@gmail.com, contatoagendasuper@gmail.com, gerenciavendasdigitais2@gmail.com"
-          from: "Deploy Automático <${{ secrets.MAIL_USER }}>"
+          from: "LandPage ${{ matrix.target.name }} ${{ env.VERSION }} ${{ env.STATUS }} nova versão disponível <${{ secrets.MAIL_USER }}>"
           body: |
-            ✅ Deploy concluído para **${{ matrix.target.name }}**
-            🌐 Versão: **${{ env.VERSION }}**
-            📦 App: **${{ env.APPNAME }}**
-            🌎 Site: **${{ env.SITE }}**
-            📅 Data: $(date '+%d/%m/%Y %H:%M:%S')
+            ✅ Deploy finalizado para Landing Page ${{ matrix.target.name }}
+            🌐 Versão: ${{ env.VERSION }}
+            📝 Descrição: ${{ env.DESC }}
+            📅 Data: ${{ env.DATA }}
+            🌐 Aplicativo: Landing Page ${{ matrix.target.name }}
+            🌎 Site: ${{ env.SITE }}
+            ⚙️ Status: ${{ env.STATUS }}
+      # 1️⃣7️⃣ Finaliza e mostra status
+      - name: ✅ Finalização do deploy
+        run: echo "🎉 Deploy concluído com sucesso para ${{ matrix.target.name }}!"
