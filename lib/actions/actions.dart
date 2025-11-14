@@ -13,7 +13,7 @@ Future<bool> actbConsultarPerguntas(BuildContext context) async {
   ApiCallResponse? apiResultConsPerguntasLdPage;
 
   apiResultConsPerguntasLdPage =
-      await FunctionsServerSupabaseAgSuperGroup.fcconsultarafldpgpergCall.call(
+      await ServerAgSuperGroup.fcconsultarafldpgpergCall.call(
     varIdAfiliadoApp: FFAppState().varIDAfiliadoAPP.toString(),
   );
 
@@ -49,9 +49,8 @@ Future<bool> actbConsultarPlanos(
 }) async {
   ApiCallResponse? apiResultConsPlanosAppFinanceiro;
 
-  apiResultConsPlanosAppFinanceiro = await FunctionsServerSupabaseAgSuperGroup
-      .fcconsultarplanoslandpgCall
-      .call(
+  apiResultConsPlanosAppFinanceiro =
+      await ServerAgSuperGroup.fcconsultarplanoslandpgCall.call(
     paramIdAfApp: FFAppState().varIDAfiliadoAPP.toString(),
     paramIdCupomPd: paramIDCupomPadrao,
   );
@@ -77,7 +76,7 @@ Future<bool?> acbConsultarAfiliadoAPP(
   ApiCallResponse? apiResultConsAfiliadoAPP;
 
   apiResultConsAfiliadoAPP =
-      await FunctionsServerSupabaseAgSuperGroup.fcconsultarafappsCall.call(
+      await ServerAgSuperGroup.fcconsultarafappsCall.call(
     varIdAfiliadoApp: paramIDApp,
   );
 
@@ -107,7 +106,7 @@ Future<String> acbConsultarEmail(
       paramString: '${paramEmail}89email',
     );
     apiResultConsEmailAPPAG =
-        await FunctionsServerSupabaseAgSuperGroup.fcconsultaremailCall.call(
+        await ServerAgSuperGroup.fcconsultaremailCall.call(
       paramEmail: paramEmail,
       paramUserId: FFAppState().varUserIDCriptoBlock,
       paramData: FFAppState().varDataCriptoBlock,
@@ -118,13 +117,13 @@ Future<String> acbConsultarEmail(
 
     if ((apiResultConsEmailAPPAG.succeeded ?? true)) {
       FFAppState().update(() {});
-      if (FunctionsServerSupabaseAgSuperGroup.fcconsultaremailCall.result(
+      if (ServerAgSuperGroup.fcconsultaremailCall.result(
             (apiResultConsEmailAPPAG.jsonBody ?? ''),
           ) ==
           'True') {
         return 'true';
       }
-      if (FunctionsServerSupabaseAgSuperGroup.fcconsultaremailCall.result(
+      if (ServerAgSuperGroup.fcconsultaremailCall.result(
             (apiResultConsEmailAPPAG.jsonBody ?? ''),
           ) ==
           'TOKINV') {
@@ -137,16 +136,14 @@ Future<String> acbConsultarEmail(
       return 'erro';
     }
   } else if (FFAppState().varIDAfiliadoAPP == 2) {
-    apiResultConsEmailAPPFIN = await FunctionsServerSupabaseAppFinanceiroGroup
-        .fcconsultaremailuserCall
-        .call(
+    apiResultConsEmailAPPFIN =
+        await ServerAppFinanceiroGroup.fcconsultaremailuserCall.call(
       paramEmail: paramEmail,
     );
 
     if ((apiResultConsEmailAPPFIN.succeeded ?? true)) {
       FFAppState().update(() {});
-      if (FunctionsServerSupabaseAppFinanceiroGroup.fcconsultaremailuserCall
-              .cadastrado(
+      if (ServerAppFinanceiroGroup.fcconsultaremailuserCall.cadastrado(
             (apiResultConsEmailAPPFIN.jsonBody ?? ''),
           ) ==
           true) {
@@ -173,11 +170,12 @@ Future<bool> acbCriarCadastro(
   bool? resultConsUrlPagamentoAppAg;
   ApiCallResponse? apiResultCriarCadastroAppFinanceiro;
   bool? resultConsUrlPagamentoAppFin;
+  ApiCallResponse? apiResultCriarCadastroAppOfertas;
+  bool? resultConsUrlPagamentoAppOfertas;
 
   if ((FFAppState().varIDAfiliadoAPP == 1) ||
       (FFAppState().varIDAfiliadoAPP == 3)) {
-    apiResultCriarCadastroAppAG =
-        await FunctionsServerSupabaseAgSuperGroup.signupCall.call(
+    apiResultCriarCadastroAppAG = await ServerAgSuperGroup.signupCall.call(
       email: paramEmail,
       senha: paramSenha,
       fullName: paramNome,
@@ -196,10 +194,10 @@ Future<bool> acbCriarCadastro(
     if ((apiResultCriarCadastroAppAG.succeeded ?? true)) {
       FFAppState().updateVarTblCAdastroStruct(
         (e) => e
-          ..userId = FunctionsServerSupabaseAgSuperGroup.signupCall.userid(
+          ..userId = ServerAgSuperGroup.signupCall.userid(
             (apiResultCriarCadastroAppAG?.jsonBody ?? ''),
           )
-          ..token = FunctionsServerSupabaseAgSuperGroup.signupCall.accesstoken(
+          ..token = ServerAgSuperGroup.signupCall.accesstoken(
             (apiResultCriarCadastroAppAG?.jsonBody ?? ''),
           ),
       );
@@ -242,7 +240,7 @@ Future<bool> acbCriarCadastro(
     }
   } else if (FFAppState().varIDAfiliadoAPP == 2) {
     apiResultCriarCadastroAppFinanceiro =
-        await FunctionsServerSupabaseAppFinanceiroGroup.userSignupCall.call(
+        await ServerAppFinanceiroGroup.userSignupCall.call(
       email: paramEmail,
       senha: paramSenha,
       fullName: paramNome,
@@ -261,12 +259,10 @@ Future<bool> acbCriarCadastro(
     if ((apiResultCriarCadastroAppFinanceiro.succeeded ?? true)) {
       FFAppState().updateVarTblCAdastroStruct(
         (e) => e
-          ..userId =
-              FunctionsServerSupabaseAppFinanceiroGroup.userSignupCall.userid(
+          ..userId = ServerAppFinanceiroGroup.userSignupCall.userid(
             (apiResultCriarCadastroAppFinanceiro?.jsonBody ?? ''),
           )
-          ..token = FunctionsServerSupabaseAppFinanceiroGroup.userSignupCall
-              .accesstoken(
+          ..token = ServerAppFinanceiroGroup.userSignupCall.accesstoken(
             (apiResultCriarCadastroAppFinanceiro?.jsonBody ?? ''),
           ),
       );
@@ -296,6 +292,71 @@ Future<bool> acbCriarCadastro(
             title: Text('Erro!'),
             content: Text(
                 'Falha no cadastro:${'\n'}${(apiResultCriarCadastroAppFinanceiro?.bodyText ?? '')}${'\n\n'}Tente novamente...'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(alertDialogContext),
+                child: Text('Ok'),
+              ),
+            ],
+          );
+        },
+      );
+      return false;
+    }
+  } else if (FFAppState().varIDAfiliadoAPP == 4) {
+    apiResultCriarCadastroAppOfertas =
+        await ServerAPPOfertasGroup.aPPOfertaSignupCall.call(
+      email: paramEmail,
+      senha: paramSenha,
+      fullName: paramNome,
+      phone:
+          '${FFAppState().varTblCAdastro.ddi} ${FFAppState().varTblCAdastro.telefone}',
+      ddi: FFAppState().varTblCAdastro.ddi,
+      pais: FFAppState().varTblCAdastro.pais,
+      codPais: FFAppState().varTblCAdastro.codPais,
+      idPlanoPreco: FFAppState().varTblCAdastro.idPlanoPreco.toString(),
+      nomeCupom: FFAppState().varCupomAplicado
+          ? FFAppState().varUltimoCupomUsado
+          : '000',
+      idAfApp: FFAppState().varIDAfiliadoAPP.toString(),
+    );
+
+    if ((apiResultCriarCadastroAppOfertas.succeeded ?? true)) {
+      FFAppState().updateVarTblCAdastroStruct(
+        (e) => e
+          ..userId = ServerAPPOfertasGroup.aPPOfertaSignupCall.userid(
+            (apiResultCriarCadastroAppOfertas?.jsonBody ?? ''),
+          )
+          ..token = ServerAPPOfertasGroup.aPPOfertaSignupCall.accesstoken(
+            (apiResultCriarCadastroAppOfertas?.jsonBody ?? ''),
+          ),
+      );
+      resultConsUrlPagamentoAppOfertas =
+          await action_blocks.acbConsultarUrlPagamento(context);
+      if (!resultConsUrlPagamentoAppOfertas) {
+        FFAppState().updateVarTblCAdastroStruct(
+          (e) => e..statusPagamento = 'FALHA',
+        );
+        FFAppState().update(() {});
+
+        context.goNamed(PagePagamentoWidget.routeName);
+
+        return false;
+      } else {
+        FFAppState().varTblCAdastro = TblCadastroStruct.fromSerializableMap(
+            jsonDecode(
+                '{\"nome\":\"\",\"telefone\":\"\",\"email\":\"\",\"email_conf\":\"\",\"senha\":\"\",\"senha_conf\":\"\",\"etapa\":\"1\"}'));
+        FFAppState().update(() {});
+        return true;
+      }
+    } else {
+      await showDialog(
+        context: context,
+        builder: (alertDialogContext) {
+          return AlertDialog(
+            title: Text('Erro!'),
+            content: Text(
+                'Falha no cadastro:${'\n'}${(apiResultCriarCadastroAppOfertas?.bodyText ?? '')}${'\n\n'}Tente novamente...'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(alertDialogContext),
@@ -344,8 +405,7 @@ Future<String> acbConsultarTelefone(
           '${functions.fcRemoverCaracteresReturnNum(paramTelefone!)}89${FFAppState().varIDAfiliadoAPP == 1 ? 'tbl_estabelecimento' : 'tbl_afiliados'}',
     );
     apiResultConsTelefoneAppAgSupEstab =
-        await FunctionsServerSupabaseAgSuperGroup.fcconsultartelefonetabsCall
-            .call(
+        await ServerAgSuperGroup.fcconsultartelefonetabsCall.call(
       paramTel: functions.fcRemoverCaracteresReturnNum(paramTelefone),
       paramTabela: FFAppState().varIDAfiliadoAPP == 1
           ? 'tbl_estabelecimento'
@@ -359,8 +419,7 @@ Future<String> acbConsultarTelefone(
 
     if ((apiResultConsTelefoneAppAgSupEstab.succeeded ?? true)) {
       FFAppState().update(() {});
-      if (FunctionsServerSupabaseAgSuperGroup.fcconsultartelefonetabsCall
-              .cadastrado(
+      if (ServerAgSuperGroup.fcconsultartelefonetabsCall.cadastrado(
             (apiResultConsTelefoneAppAgSupEstab.jsonBody ?? ''),
           ) ==
           'true') {
@@ -373,16 +432,13 @@ Future<String> acbConsultarTelefone(
     }
   } else if (FFAppState().varIDAfiliadoAPP == 2) {
     apiResultConsTelefoneAppFinanceiro =
-        await FunctionsServerSupabaseAppFinanceiroGroup
-            .fcconsultartelefoneuserCall
-            .call(
+        await ServerAppFinanceiroGroup.fcconsultartelefoneuserCall.call(
       paramTelefone: paramTelefone,
     );
 
     if ((apiResultConsTelefoneAppFinanceiro.succeeded ?? true)) {
       FFAppState().update(() {});
-      if (FunctionsServerSupabaseAppFinanceiroGroup.fcconsultartelefoneuserCall
-              .cadastrado(
+      if (ServerAppFinanceiroGroup.fcconsultartelefoneuserCall.cadastrado(
             (apiResultConsTelefoneAppFinanceiro.jsonBody ?? ''),
           ) ==
           true) {
@@ -409,23 +465,21 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
           milliseconds: 1000,
         ),
       );
-      apiResultConsultarUrl = await FunctionsServerSupabaseAgSuperGroup
-          .fcconsultarafurlstripeCall
-          .call(
+      apiResultConsultarUrl =
+          await ServerAgSuperGroup.fcconsultarafurlstripeCall.call(
         paramUserId: FFAppState().varTblCAdastro.userId,
       );
 
       FFAppState().varContadorBlock = FFAppState().varContadorBlock + 1;
       if ((apiResultConsultarUrl.succeeded ?? true) &&
-          (FunctionsServerSupabaseAgSuperGroup.fcconsultarafurlstripeCall
-                  .result(
+          (ServerAgSuperGroup.fcconsultarafurlstripeCall.result(
                 (apiResultConsultarUrl.jsonBody ?? ''),
               ) ==
               'True')) {
         FFAppState().varContadorBlock = 100;
       }
     }
-    if (FunctionsServerSupabaseAgSuperGroup.fcconsultarafurlstripeCall.result(
+    if (ServerAgSuperGroup.fcconsultarafurlstripeCall.result(
           (apiResultConsultarUrl?.jsonBody ?? ''),
         ) ==
         'True') {
@@ -434,8 +488,7 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
               '{\"nome\":\"\",\"telefone\":\"\",\"email\":\"\",\"email_conf\":\"\",\"senha\":\"\",\"senha_conf\":\"\",\"etapa\":\"1\"}'));
       FFAppState().update(() {});
       await actions.caWebRedirectToUrl(
-        FunctionsServerSupabaseAgSuperGroup.fcconsultarafurlstripeCall
-            .urlstripe(
+        ServerAgSuperGroup.fcconsultarafurlstripeCall.urlstripe(
           (apiResultConsultarUrl?.jsonBody ?? ''),
         )!,
       );
@@ -461,8 +514,7 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
         }(),
       );
       return false;
-    } else if (FunctionsServerSupabaseAgSuperGroup.fcconsultarafurlstripeCall
-            .result(
+    } else if (ServerAgSuperGroup.fcconsultarafurlstripeCall.result(
           (apiResultConsultarUrl?.jsonBody ?? ''),
         ) ==
         'False') {
@@ -486,8 +538,7 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
         }(),
       );
       return false;
-    } else if (FunctionsServerSupabaseAgSuperGroup.fcconsultarafurlstripeCall
-            .result(
+    } else if (ServerAgSuperGroup.fcconsultarafurlstripeCall.result(
           (apiResultConsultarUrl?.jsonBody ?? ''),
         ) ==
         'Expirado') {
@@ -628,8 +679,7 @@ Future<bool> acbConsultarCupom(
 }) async {
   ApiCallResponse? apiResultConsCupom;
 
-  apiResultConsCupom =
-      await FunctionsServerSupabaseAgSuperGroup.fcconsultarcupomCall.call(
+  apiResultConsCupom = await ServerAgSuperGroup.fcconsultarcupomCall.call(
     paramCupom: paramCupom,
     paramIdAfApp: paramIDAfiliadoApp,
     paramUserIdCli: '${random_data.randomString(
@@ -743,14 +793,14 @@ Future<bool> acbConsultarCupom(
   );
 
   if ((apiResultConsCupom.succeeded ?? true)) {
-    if (FunctionsServerSupabaseAgSuperGroup.fcconsultarcupomCall.result(
+    if (ServerAgSuperGroup.fcconsultarcupomCall.result(
           (apiResultConsCupom.jsonBody ?? ''),
         ) ==
         'True') {
       FFAppState().varTblCupom = (apiResultConsCupom.jsonBody ?? '');
       FFAppState().update(() {});
       return true;
-    } else if (FunctionsServerSupabaseAgSuperGroup.fcconsultarcupomCall.vencido(
+    } else if (ServerAgSuperGroup.fcconsultarcupomCall.vencido(
           (apiResultConsCupom.jsonBody ?? ''),
         ) ==
         true) {
@@ -799,9 +849,7 @@ Future<bool> acbConsultarCupom(
         builder: (alertDialogContext) {
           return AlertDialog(
             title: Text('Atenção!'),
-            content: Text(FunctionsServerSupabaseAgSuperGroup
-                .fcconsultarcupomCall
-                .message(
+            content: Text(ServerAgSuperGroup.fcconsultarcupomCall.message(
               (apiResultConsCupom?.jsonBody ?? ''),
             )!),
             actions: [
@@ -864,8 +912,7 @@ Future<bool> acbAplicarCupom(
 Future<bool> acbConsultarDDI(BuildContext context) async {
   ApiCallResponse? apiResultConsDDI;
 
-  apiResultConsDDI =
-      await FunctionsServerSupabaseAgSuperGroup.fcconsultarddiCall.call(
+  apiResultConsDDI = await ServerAgSuperGroup.fcconsultarddiCall.call(
     paramIdAfApp: FFAppState().varIDAfiliadoAPP.toString(),
   );
 
@@ -904,9 +951,7 @@ Future<String> acbCriptografarStringMD5(
 Future acbConsultarTema(BuildContext context) async {
   ApiCallResponse? apiResultConsTema;
 
-  apiResultConsTema = await FunctionsServerSupabaseAgSuperGroup
-      .tblafiliadosldpgtemasCall
-      .call();
+  apiResultConsTema = await ServerAgSuperGroup.tblafiliadosldpgtemasCall.call();
 
   if ((apiResultConsTema.succeeded ?? true)) {
     FFAppState().varTblTema =

@@ -716,7 +716,7 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                 ).toString(),
                           'https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/landingpage-m9g3vr/assets/qrw7s9vlsq49/ChatGPT_Image_3_de_set._de_2025%2C_18_13_51_(1).png',
                         ),
-                        width: 250.0,
+                        height: 80.0,
                         fit: BoxFit.cover,
                       ),
                     ).animateOnPageLoad(
@@ -817,8 +817,7 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       FFAppState()
                                                           .varEmDesenvolvimento) {
                                                     _model.varNomeTeste =
-                                                        random_data.randomName(
-                                                            true, true);
+                                                        'Heron teste ${random_data.randomName(true, true)}';
                                                     safeSetState(() {});
                                                     safeSetState(() {
                                                       _model.textFieldNomeTextController
@@ -2309,8 +2308,6 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       Flexible(
                                                         child: FFButtonWidget(
                                                           onPressed: () async {
-                                                            var _shouldSetState =
-                                                                false;
                                                             if (_model
                                                                     .dropDownDDIValue ==
                                                                 15) {
@@ -2335,52 +2332,6 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                               }
                                                             }
 
-                                                            _model.resultConsTelefone1 =
-                                                                await action_blocks
-                                                                    .acbConsultarTelefone(
-                                                              context,
-                                                              paramTelefone: _model
-                                                                          .dropDownDDIValue ==
-                                                                      15
-                                                                  ? _model
-                                                                      .textFieldTelWhatsAppBrasilTextController
-                                                                      .text
-                                                                  : _model
-                                                                      .textFieldTelWhatsAppOutrosTextController
-                                                                      .text,
-                                                            );
-                                                            _shouldSetState =
-                                                                true;
-                                                            if (_model
-                                                                    .resultConsTelefone1 ==
-                                                                'true') {
-                                                              await showDialog(
-                                                                context:
-                                                                    context,
-                                                                builder:
-                                                                    (alertDialogContext) {
-                                                                  return AlertDialog(
-                                                                    title: Text(
-                                                                        'Atenção!'),
-                                                                    content: Text(
-                                                                        'Esse telefone já está cadastrado no sistema'),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () =>
-                                                                                Navigator.pop(alertDialogContext),
-                                                                        child: Text(
-                                                                            'Ok'),
-                                                                      ),
-                                                                    ],
-                                                                  );
-                                                                },
-                                                              );
-                                                              if (_shouldSetState)
-                                                                safeSetState(
-                                                                    () {});
-                                                              return;
-                                                            }
                                                             if (FFAppState()
                                                                     .varTblCAdastro
                                                                     .etapa <=
@@ -2458,9 +2409,6 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                               curve:
                                                                   Curves.ease,
                                                             );
-                                                            if (_shouldSetState)
-                                                              safeSetState(
-                                                                  () {});
                                                           },
                                                           text: 'Continuar',
                                                           options:
@@ -2643,7 +2591,7 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       FFAppState()
                                                           .varEmDesenvolvimento) {
                                                     _model.resultCriarUserTeste =
-                                                        await FunctionsServerSupabaseAgSuperGroup
+                                                        await ServerAgSuperGroup
                                                             .fccriarusuariotesteCall
                                                             .call(
                                                       paramIdAfApp: FFAppState()
@@ -2659,7 +2607,7 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       safeSetState(() {
                                                         _model.textFieldEmailTextController
                                                                 ?.text =
-                                                            FunctionsServerSupabaseAgSuperGroup
+                                                            ServerAgSuperGroup
                                                                 .fccriarusuariotesteCall
                                                                 .email(
                                                           (_model.resultCriarUserTeste
@@ -2670,7 +2618,7 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       safeSetState(() {
                                                         _model.textFieldConfEmailTextController
                                                                 ?.text =
-                                                            FunctionsServerSupabaseAgSuperGroup
+                                                            ServerAgSuperGroup
                                                                 .fccriarusuariotesteCall
                                                                 .email(
                                                           (_model.resultCriarUserTeste

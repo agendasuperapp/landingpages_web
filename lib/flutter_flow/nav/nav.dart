@@ -43,8 +43,8 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
                       color: Colors.transparent,
                       child: Center(
                         child: Image.asset(
-                          'assets/images/ChatGPT_Image_3_de_set._de_2025,_18_13_51.png',
-                          width: MediaQuery.sizeOf(context).width * 0.8,
+                          'assets/images/App_Ofertas_Verde.png',
+                          width: MediaQuery.sizeOf(context).width * 0.5,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -63,8 +63,8 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
                           color: Colors.transparent,
                           child: Center(
                             child: Image.asset(
-                              'assets/images/ChatGPT_Image_3_de_set._de_2025,_18_13_51.png',
-                              width: MediaQuery.sizeOf(context).width * 0.8,
+                              'assets/images/App_Ofertas_Verde.png',
+                              width: MediaQuery.sizeOf(context).width * 0.5,
                               fit: BoxFit.cover,
                             ),
                           ),

@@ -9,9 +9,9 @@ export 'api_manager.dart' show ApiCallResponse;
 
 const _kPrivateApiFunctionName = 'ffPrivateApiCall';
 
-/// Start Functions Server Supabase  Ag Super Group Code
+/// Start  Server  Ag Super Group Code
 
-class FunctionsServerSupabaseAgSuperGroup {
+class ServerAgSuperGroup {
   static String getBaseUrl() => 'https://hzmixuvrnzpypriagecv.supabase.co/';
   static Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -43,7 +43,7 @@ class FcconsultarafldpgpergCall {
   Future<ApiCallResponse> call({
     String? varIdAfiliadoApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -116,7 +116,7 @@ class FcconsultarafappsCall {
   Future<ApiCallResponse> call({
     String? varIdAfiliadoApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -193,7 +193,7 @@ class FcconsultarafurlstripeCall {
   Future<ApiCallResponse> call({
     String? paramUserId = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -253,7 +253,7 @@ class FccriarpagamentostripeappCall {
     String? paramDv = '',
     String? paramKey = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -319,7 +319,7 @@ class FcconsultarcupomCall {
     String? paramDv = '',
     String? paramKey = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -440,7 +440,7 @@ class FcconsultartelefonetabsCall {
     String? paramDv = '',
     String? paramKey = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -498,7 +498,7 @@ class FcconsultaremailCall {
     String? paramDv = '',
     String? paramKey = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -542,7 +542,7 @@ class FcconsultarplanoslandpgCall {
     String? paramIdAfApp = '',
     String? paramIdCupomPd = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -694,7 +694,7 @@ class FccriarusuariotesteCall {
     String? paramIdAfApp = '',
     bool? paramCriar,
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -740,7 +740,7 @@ class FcconsultarddiCall {
   Future<ApiCallResponse> call({
     String? paramIdAfApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -858,7 +858,7 @@ class SignupCall {
     String? codPais = '',
     String? idAfApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -910,7 +910,7 @@ class TblafiliadosldpgtemasCall {
   Future<ApiCallResponse> call({
     String? token = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAgSuperGroup.getBaseUrl();
+    final baseUrl = ServerAgSuperGroup.getBaseUrl();
 
     return ApiManager.instance.makeApiCall(
       callName: 'tblafiliadosldpgtemas',
@@ -1002,11 +1002,11 @@ class TblafiliadosldpgtemasCall {
           .toList();
 }
 
-/// End Functions Server Supabase  Ag Super Group Code
+/// End  Server  Ag Super Group Code
 
-/// Start Functions Server Supabase  App Financeiro Group Code
+/// Start Server  App Financeiro Group Code
 
-class FunctionsServerSupabaseAppFinanceiroGroup {
+class ServerAppFinanceiroGroup {
   static String getBaseUrl() => 'https://gpttodmpflpzhbgzagcc.supabase.co/';
   static Map<String, String> headers = {
     'Content-Type': 'application/json',
@@ -1029,7 +1029,7 @@ class FcconsultarplanosCall {
   Future<ApiCallResponse> call({
     String? varIdAfiliadoApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1148,7 +1148,7 @@ class FcconsultaremailuserCall {
   Future<ApiCallResponse> call({
     String? paramEmail = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1193,7 +1193,7 @@ class FcconsultaruserCall {
   Future<ApiCallResponse> call({
     String? paramEmail = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1246,7 +1246,7 @@ class FcconsultartelefoneuserCall {
   Future<ApiCallResponse> call({
     String? paramTelefone = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1292,7 +1292,7 @@ class FcconsultarurlstripeCall {
     String? paramUserId = '',
     String? token = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1347,7 +1347,7 @@ class UserSignupCall {
     String? ddi = '',
     String? idAfApp = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1404,7 +1404,7 @@ class AddSubscriptionCall {
     String? userId = '',
     String? idPlanoPreco = '',
   }) async {
-    final baseUrl = FunctionsServerSupabaseAppFinanceiroGroup.getBaseUrl();
+    final baseUrl = ServerAppFinanceiroGroup.getBaseUrl();
 
     final ffApiRequestBody = '''
 {
@@ -1434,7 +1434,84 @@ class AddSubscriptionCall {
   }
 }
 
-/// End Functions Server Supabase  App Financeiro Group Code
+/// End Server  App Financeiro Group Code
+
+/// Start Server APP Ofertas Group Code
+
+class ServerAPPOfertasGroup {
+  static String getBaseUrl() => 'https://mgpzowiahnwcmcaelogf.supabase.co/';
+  static Map<String, String> headers = {
+    'apikey':
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ncHpvd2lhaG53Y21jYWVsb2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MjQ2MTIsImV4cCI6MjA3ODIwMDYxMn0.sC-SMpIf8-VbZWB6BCIQG-TtROcxyzE4hK4bFocTRQE',
+  };
+  static APPOfertaSignupCall aPPOfertaSignupCall = APPOfertaSignupCall();
+}
+
+class APPOfertaSignupCall {
+  Future<ApiCallResponse> call({
+    String? email = '',
+    String? senha = '',
+    String? fullName = '',
+    String? phone = '',
+    String? ddi = '',
+    String? pais = '',
+    String? codPais = '',
+    String? idPlanoPreco = '',
+    String? nomeCupom = '',
+    String? idAfApp = '',
+  }) async {
+    final baseUrl = ServerAPPOfertasGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "email": "${escapeStringForJson(email)}",
+  "password": "${escapeStringForJson(senha)}",
+  "data": {
+    "full_name": "${escapeStringForJson(fullName)}",
+    "phone": "${escapeStringForJson(phone)}",
+    "ddi": "${escapeStringForJson(ddi)}",
+    "pais": "${escapeStringForJson(pais)}",
+    "cod_pais": "${escapeStringForJson(codPais)}",
+    "id_plano_preco": "${escapeStringForJson(idPlanoPreco)}",
+    "nome_cupom": "${escapeStringForJson(nomeCupom)}",
+    "id_af_app": "${escapeStringForJson(idAfApp)}"
+  }
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'APP Oferta signup',
+      apiUrl: '${baseUrl}auth/v1/signup',
+      callType: ApiCallType.POST,
+      headers: {
+        'apikey':
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ncHpvd2lhaG53Y21jYWVsb2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MjQ2MTIsImV4cCI6MjA3ODIwMDYxMn0.sC-SMpIf8-VbZWB6BCIQG-TtROcxyzE4hK4bFocTRQE',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  String? accesstoken(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$.access_token''',
+      ));
+  String? useremail(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$.user.email''',
+      ));
+  String? userid(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$.user.id''',
+      ));
+}
+
+/// End Server APP Ofertas Group Code
 
 class ApiPagingParams {
   int nextPageNumber = 0;
