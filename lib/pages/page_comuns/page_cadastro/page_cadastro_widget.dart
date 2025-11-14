@@ -46,6 +46,7 @@ class _PageCadastroWidgetState extends State<PageCadastroWidget> {
         return;
       }
       if ((FFAppState().varTblPlanos.length == 0) ||
+          (FFAppState().varTblAfiliadoAPP.length == 0) ||
           (FFAppState().varTblAfiliadoAPP.length == 0)) {
         await action_blocks.acbAtualizarInicializacao(context);
       }

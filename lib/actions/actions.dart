@@ -7,6 +7,7 @@ import '/custom_code/actions/index.dart' as actions;
 import '/flutter_flow/custom_functions.dart' as functions;
 import '/flutter_flow/random_data_util.dart' as random_data;
 import '/index.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 Future<bool> actbConsultarPerguntas(BuildContext context) async {
@@ -392,66 +393,7 @@ Future<String> acbConsultarTelefone(
   BuildContext context, {
   required String? paramTelefone,
 }) async {
-  String? acBlockResultCriptMD5ConsTelEstab;
-  ApiCallResponse? apiResultConsTelefoneAppAgSupEstab;
-  ApiCallResponse? apiResultConsTelefoneAppFinanceiro;
-
-  if ((FFAppState().varIDAfiliadoAPP == 1) ||
-      (FFAppState().varIDAfiliadoAPP == 3)) {
-    acBlockResultCriptMD5ConsTelEstab =
-        await action_blocks.acbCriptografarStringMD5(
-      context,
-      paramString:
-          '${functions.fcRemoverCaracteresReturnNum(paramTelefone!)}89${FFAppState().varIDAfiliadoAPP == 1 ? 'tbl_estabelecimento' : 'tbl_afiliados'}',
-    );
-    apiResultConsTelefoneAppAgSupEstab =
-        await ServerAgSuperGroup.fcconsultartelefonetabsCall.call(
-      paramTel: functions.fcRemoverCaracteresReturnNum(paramTelefone),
-      paramTabela: FFAppState().varIDAfiliadoAPP == 1
-          ? 'tbl_estabelecimento'
-          : 'tbl_afiliados',
-      paramUserId: FFAppState().varUserIDCriptoBlock,
-      paramData: FFAppState().varDataCriptoBlock,
-      paramToken: acBlockResultCriptMD5ConsTelEstab,
-      paramDv: FFAppState().varDeviceIDCriptoBlock,
-      paramKey: FFAppState().varKeyCriptoBlock,
-    );
-
-    if ((apiResultConsTelefoneAppAgSupEstab.succeeded ?? true)) {
-      FFAppState().update(() {});
-      if (ServerAgSuperGroup.fcconsultartelefonetabsCall.cadastrado(
-            (apiResultConsTelefoneAppAgSupEstab.jsonBody ?? ''),
-          ) ==
-          'true') {
-        return 'true';
-      }
-
-      return 'false';
-    } else {
-      return 'erro';
-    }
-  } else if (FFAppState().varIDAfiliadoAPP == 2) {
-    apiResultConsTelefoneAppFinanceiro =
-        await ServerAppFinanceiroGroup.fcconsultartelefoneuserCall.call(
-      paramTelefone: paramTelefone,
-    );
-
-    if ((apiResultConsTelefoneAppFinanceiro.succeeded ?? true)) {
-      FFAppState().update(() {});
-      if (ServerAppFinanceiroGroup.fcconsultartelefoneuserCall.cadastrado(
-            (apiResultConsTelefoneAppFinanceiro.jsonBody ?? ''),
-          ) ==
-          true) {
-        return 'true';
-      }
-
-      return 'false';
-    } else {
-      return 'erro';
-    }
-  } else {
-    return 'false';
-  }
+  return 'false';
 }
 
 Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
@@ -610,6 +552,9 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
 
 Future acbAtualizarInicializacao(BuildContext context) async {
   setDarkModeSetting(context, ThemeMode.dark);
+  if (kDebugMode || FFAppState().varEmDesenvolvimento) {
+    FFAppState().varIDAfiliadoAPP = 3;
+  }
   if ((FFAppState().varDeviceIDCriptoBlock == '') ||
       (FFAppState().varUserIDCriptoBlock == '')) {
     FFAppState().varDeviceIDCriptoBlock = '${random_data.randomString(

@@ -38,10 +38,6 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
     // On page load action.
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      if (FFAppState().varIDAfiliadoAPP == 91234567890) {
-        FFAppState().varIDAfiliadoAPP = 3;
-        safeSetState(() {});
-      }
       await action_blocks.acbAtualizarInicializacao(context);
       await action_blocks.actbConsultarPerguntas(context);
       if (widget.cupom != null && widget.cupom != '') {

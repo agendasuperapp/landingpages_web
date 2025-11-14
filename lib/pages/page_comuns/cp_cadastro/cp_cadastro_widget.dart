@@ -2308,6 +2308,8 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                       Flexible(
                                                         child: FFButtonWidget(
                                                           onPressed: () async {
+                                                            var _shouldSetState =
+                                                                false;
                                                             if (_model
                                                                     .dropDownDDIValue ==
                                                                 15) {
@@ -2332,6 +2334,52 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                               }
                                                             }
 
+                                                            _model.resultConsTelefone1 =
+                                                                await action_blocks
+                                                                    .acbConsultarTelefone(
+                                                              context,
+                                                              paramTelefone: _model
+                                                                          .dropDownDDIValue ==
+                                                                      15
+                                                                  ? _model
+                                                                      .textFieldTelWhatsAppBrasilTextController
+                                                                      .text
+                                                                  : _model
+                                                                      .textFieldTelWhatsAppOutrosTextController
+                                                                      .text,
+                                                            );
+                                                            _shouldSetState =
+                                                                true;
+                                                            if (_model
+                                                                    .resultConsTelefone1 ==
+                                                                'true') {
+                                                              await showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (alertDialogContext) {
+                                                                  return AlertDialog(
+                                                                    title: Text(
+                                                                        'Atenção!'),
+                                                                    content: Text(
+                                                                        'Esse telefone já está cadastrado no sistema'),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () =>
+                                                                                Navigator.pop(alertDialogContext),
+                                                                        child: Text(
+                                                                            'Ok'),
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },
+                                                              );
+                                                              if (_shouldSetState)
+                                                                safeSetState(
+                                                                    () {});
+                                                              return;
+                                                            }
                                                             if (FFAppState()
                                                                     .varTblCAdastro
                                                                     .etapa <=
@@ -2409,6 +2457,9 @@ class _CpCadastroWidgetState extends State<CpCadastroWidget>
                                                               curve:
                                                                   Curves.ease,
                                                             );
+                                                            if (_shouldSetState)
+                                                              safeSetState(
+                                                                  () {});
                                                           },
                                                           text: 'Continuar',
                                                           options:

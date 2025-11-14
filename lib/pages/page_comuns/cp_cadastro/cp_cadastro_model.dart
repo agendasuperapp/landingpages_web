@@ -78,6 +78,8 @@ class CpCadastroModel extends FlutterFlowModel<CpCadastroWidget> {
     return null;
   }
 
+  // Stores action output result for [Action Block - acbConsultarTelefone] action in Button widget.
+  String? resultConsTelefone1;
   // Stores action output result for [Backend Call - API (fccriarusuarioteste)] action in Text widget.
   ApiCallResponse? resultCriarUserTeste;
   // State field(s) for TextFieldEmail widget.
