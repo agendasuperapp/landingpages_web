@@ -98,6 +98,7 @@ Future<String> acbConsultarEmail(
   String? acBlockResultCriptMD5ConsEmailEstab;
   ApiCallResponse? apiResultConsEmailAPPAG;
   ApiCallResponse? apiResultConsEmailAPPFIN;
+  ApiCallResponse? apiResultConsEmailAPPOFF;
 
   if ((FFAppState().varIDAfiliadoAPP == 1) ||
       (FFAppState().varIDAfiliadoAPP == 3)) {
@@ -155,8 +156,42 @@ Future<String> acbConsultarEmail(
     } else {
       return 'erro';
     }
+  } else if (FFAppState().varIDAfiliadoAPP == 4) {
+    apiResultConsEmailAPPOFF =
+        await ServerAPPOfertasGroup.appOfertsConsultarEmailUserCall.call(
+      paramEmail: paramEmail,
+    );
+
+    if ((apiResultConsEmailAPPOFF.succeeded ?? true)) {
+      FFAppState().update(() {});
+      if (ServerAPPOfertasGroup.appOfertsConsultarEmailUserCall.cadastrado(
+            (apiResultConsEmailAPPOFF.jsonBody ?? ''),
+          ) ==
+          true) {
+        return 'true';
+      }
+
+      return 'false';
+    } else {
+      return 'erro';
+    }
   } else {
-    return 'nao tratado';
+    await showDialog(
+      context: context,
+      builder: (alertDialogContext) {
+        return AlertDialog(
+          title: Text('Atenção@'),
+          content: Text('Função não implementada'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(alertDialogContext),
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    );
+    return 'true';
   }
 }
 
@@ -552,8 +587,8 @@ Future<bool> acbConsultarUrlPagamento(BuildContext context) async {
 
 Future acbAtualizarInicializacao(BuildContext context) async {
   setDarkModeSetting(context, ThemeMode.dark);
-  if (kDebugMode || FFAppState().varEmDesenvolvimento) {
-    FFAppState().varIDAfiliadoAPP = 3;
+  if (kDebugMode) {
+    FFAppState().varIDAfiliadoAPP = 4;
   }
   if ((FFAppState().varDeviceIDCriptoBlock == '') ||
       (FFAppState().varUserIDCriptoBlock == '')) {

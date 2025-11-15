@@ -1445,6 +1445,8 @@ class ServerAPPOfertasGroup {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ncHpvd2lhaG53Y21jYWVsb2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MjQ2MTIsImV4cCI6MjA3ODIwMDYxMn0.sC-SMpIf8-VbZWB6BCIQG-TtROcxyzE4hK4bFocTRQE',
   };
   static APPOfertaSignupCall aPPOfertaSignupCall = APPOfertaSignupCall();
+  static AppOfertsConsultarEmailUserCall appOfertsConsultarEmailUserCall =
+      AppOfertsConsultarEmailUserCall();
 }
 
 class APPOfertaSignupCall {
@@ -1508,6 +1510,54 @@ class APPOfertaSignupCall {
   String? userid(dynamic response) => castToType<String>(getJsonField(
         response,
         r'''$.user.id''',
+      ));
+}
+
+class AppOfertsConsultarEmailUserCall {
+  Future<ApiCallResponse> call({
+    String? paramEmail = '',
+  }) async {
+    final baseUrl = ServerAPPOfertasGroup.getBaseUrl();
+
+    final ffApiRequestBody = '''
+{
+  "param_email": "${escapeStringForJson(paramEmail)}"
+}''';
+    return ApiManager.instance.makeApiCall(
+      callName: 'app oferts consultar email user',
+      apiUrl: '${baseUrl}rest/v1/rpc/fc_consultar_email_user',
+      callType: ApiCallType.POST,
+      headers: {
+        'apikey':
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ncHpvd2lhaG53Y21jYWVsb2dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MjQ2MTIsImV4cCI6MjA3ODIwMDYxMn0.sC-SMpIf8-VbZWB6BCIQG-TtROcxyzE4hK4bFocTRQE',
+      },
+      params: {},
+      body: ffApiRequestBody,
+      bodyType: BodyType.JSON,
+      returnBody: true,
+      encodeBodyUtf8: false,
+      decodeUtf8: false,
+      cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
+    );
+  }
+
+  String? message(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$.message''',
+      ));
+  String? code(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$.code''',
+      ));
+  bool? cadastrado(dynamic response) => castToType<bool>(getJsonField(
+        response,
+        r'''$[:].cadastrado''',
+      ));
+  String? result(dynamic response) => castToType<String>(getJsonField(
+        response,
+        r'''$[:].result''',
       ));
 }
 

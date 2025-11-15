@@ -74,7 +74,7 @@ class FFAppState extends ChangeNotifier {
 
   late SharedPreferences prefs;
 
-  String _varVersao = '1.0.28';
+  String _varVersao = '1.0.31';
   String get varVersao => _varVersao;
   set varVersao(String value) {
     _varVersao = value;
